@@ -18,6 +18,24 @@ from seed import seed_database
 from validators import validate_book_payload, validate_customer_payload
 
 
+def normalize_database_url(url: str) -> str:
+    """Normalize PostgreSQL database URL to explicitly use the psycopg2 driver.
+
+    Converts 'postgres://', 'postgresql://', or 'postgresql+psycopg://' to
+    'postgresql+psycopg2://' while preserving the remainder of the URL and query parameters.
+    """
+    prefixes = [
+        ("postgresql+psycopg://", "postgresql+psycopg2://"),
+        ("postgresql+psycopg2://", "postgresql+psycopg2://"),
+        ("postgresql://", "postgresql+psycopg2://"),
+        ("postgres://", "postgresql+psycopg2://"),
+    ]
+    for prefix, target in prefixes:
+        if url.startswith(prefix):
+            return target + url[len(prefix):]
+    return url
+
+
 def resolve_database_uri() -> str:
     """Resolve database URI from environment with SQLite fallback and Postgres normalization."""
     raw_uri = os.getenv("DATABASE_URL")
@@ -26,10 +44,7 @@ def resolve_database_uri() -> str:
         db_path = os.path.join(base_dir, "bookstore.db")
         return f"sqlite:///{db_path}"
 
-    if raw_uri.startswith("postgres://"):
-        return raw_uri.replace("postgres://", "postgresql://", 1)
-
-    return raw_uri
+    return normalize_database_url(raw_uri)
 
 
 def create_app(test_config=None) -> Flask:
@@ -807,22 +822,29 @@ def create_app(test_config=None) -> Flask:
         """Render custom 500 page."""
         return render_template("errors/500.html"), 500
 
-    # Initialize tables and seed dataset safely (handles multi-worker startup race conditions)
+    # Initialize tables and seed dataset safely (handles multi-worker startup race conditions & unreachable DB)
     with app.app_context():
         try:
             db.create_all()
         except Exception as e:
+            try:
+                db.session.rollback()
+            except Exception:
+                pass
             app.logger.warning(
-                f"db.create_all() notice (possible concurrent worker startup): {e}"
+                f"db.create_all() notice (database unreachable or concurrent worker startup): {e}"
             )
 
         try:
             if Book.query.first() is None:
                 seed_database(force=False)
         except Exception as e:
-            db.session.rollback()
+            try:
+                db.session.rollback()
+            except Exception:
+                pass
             app.logger.warning(
-                f"seed_database() notice (possible concurrent worker startup): {e}"
+                f"seed_database() notice (database unreachable or concurrent worker startup): {e}"
             )
 
     return app
