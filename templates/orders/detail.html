@@ -68,7 +68,6 @@
                 <table class="table align-middle mb-0">
                     <thead class="table-light">
                         <tr>
-                            <th scope="col" style="width: 50px;">Cover</th>
                             <th scope="col">Book Details</th>
                             <th scope="col" class="text-end">Unit Price</th>
                             <th scope="col" class="text-center">Quantity</th>
@@ -78,15 +77,6 @@
                     <tbody>
                         {% for item in order.items %}
                             <tr>
-                                <td>
-                                    {% if item.book.cover_url %}
-                                        <img src="{{ item.book.cover_url }}" alt="{{ item.book.title }}" class="rounded shadow-xs object-fit-cover" style="width: 40px; height: 54px;" onerror="this.onerror=null; this.src='https://placehold.co/80x108?text=Book';">
-                                    {% else %}
-                                        <div class="bg-light border rounded d-flex align-items-center justify-content-center text-muted" style="width: 40px; height: 54px;">
-                                            <i class="bi bi-book"></i>
-                                        </div>
-                                    {% endif %}
-                                </td>
                                 <td>
                                     <a href="{{ url_for('books_detail', id=item.book.id) }}" class="fw-semibold text-dark text-decoration-none">
                                         {{ item.book.title }}
@@ -112,7 +102,7 @@
                     </tbody>
                     <tfoot class="table-light">
                         <tr>
-                            <td colspan="4" class="text-end fw-bold">Total Amount:</td>
+                            <td colspan="3" class="text-end fw-bold">Total Amount:</td>
                             <td class="text-end fw-bold fs-5 text-primary">
                                 ${{ "%.2f"|format(order.total_amount) }}
                             </td>

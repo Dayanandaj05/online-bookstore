@@ -68,6 +68,9 @@ def run_e2e_tests():
             page.wait_for_selector("h1")
             assert "The Pragmatic Architect (Revised Edition)" in page.text_content("h1")
             assert "49.99" in page.content()
+            book_detail_path = os.path.join(SCREENSHOTS_DIR, "book_detail_page.png")
+            page.screenshot(path=book_detail_path, full_page=True)
+            print(f" Captured book detail screenshot: {book_detail_path}")
             print(" Book edited and detail page updated.")
 
             # 1c. Delete book (handled by dialog auto-accept)

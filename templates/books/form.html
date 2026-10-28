@@ -94,13 +94,6 @@
                         </div>
                     </div>
 
-                    <!-- Cover URL -->
-                    <div class="mb-3">
-                        <label for="cover_url" class="form-label fw-semibold">Cover Image URL <span class="text-muted fw-normal">(Optional)</span></label>
-                        <input type="url" class="form-control {% if errors and errors.get('cover_url') %}is-invalid{% endif %}" id="cover_url" name="cover_url" value="{{ data.get('cover_url', '') }}" placeholder="https://images.unsplash.com/...">
-                        <div class="form-text">Direct image URL for displaying the book cover thumbnail.</div>
-                    </div>
-
                     <!-- Description -->
                     <div class="mb-4">
                         <label for="description" class="form-label fw-semibold">Description <span class="text-muted fw-normal">(Optional)</span></label>

@@ -23,7 +23,7 @@ def seed_database(force: bool = False) -> bool:
             "stock": 18,
             "category": "Software Engineering",
             "description": "One of the most significant books in modern software craftsmanship, filled with practical advice and foundational career wisdom.",
-            "cover_url": "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=600&q=80",
+            "cover_url": None,
         },
         {
             "title": "Designing Data-Intensive Applications",
@@ -33,7 +33,7 @@ def seed_database(force: bool = False) -> bool:
             "stock": 25,
             "category": "Distributed Systems",
             "description": "The definitive guide to the architecture of data systems, covering transactions, replication, partitioning, and stream processing.",
-            "cover_url": "https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=600&q=80",
+            "cover_url": None,
         },
         {
             "title": "Clean Code: A Handbook of Agile Software Craftsmanship",
@@ -43,7 +43,7 @@ def seed_database(force: bool = False) -> bool:
             "stock": 15,
             "category": "Software Engineering",
             "description": "Best practices, code smells, and heuristic guidelines for crafting clean, readable, testable, and maintainable software.",
-            "cover_url": "https://images.unsplash.com/photo-1532012164546-f432f2e3777f?auto=format&fit=crop&w=600&q=80",
+            "cover_url": None,
         },
         {
             "title": "Structure and Interpretation of Computer Programs",
@@ -53,7 +53,7 @@ def seed_database(force: bool = False) -> bool:
             "stock": 10,
             "category": "Computer Science",
             "description": "The legendary MIT classic teaching fundamental computer science abstractions, interpreters, and programming paradigms.",
-            "cover_url": "https://images.unsplash.com/photo-1497633762265-9d179a990aa6?auto=format&fit=crop&w=600&q=80",
+            "cover_url": None,
         },
         {
             "title": "Dune",
@@ -63,7 +63,7 @@ def seed_database(force: bool = False) -> bool:
             "stock": 30,
             "category": "Science Fiction",
             "description": "Set on the harsh desert planet Arrakis, Dune is an unparalleled epic exploring politics, religion, ecology, and destiny.",
-            "cover_url": "https://images.unsplash.com/photo-1506466010722-395aa2bef877?auto=format&fit=crop&w=600&q=80",
+            "cover_url": None,
         },
         {
             "title": "Project Hail Mary",
@@ -73,7 +73,7 @@ def seed_database(force: bool = False) -> bool:
             "stock": 22,
             "category": "Science Fiction",
             "description": "A lone astronaut awakens from a coma to discover he is humanity's final hope against an extinction-level solar crisis.",
-            "cover_url": "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=600&q=80",
+            "cover_url": None,
         },
         {
             "title": "To Kill a Mockingbird",
@@ -83,7 +83,7 @@ def seed_database(force: bool = False) -> bool:
             "stock": 28,
             "category": "Classic Literature",
             "description": "A Pulitzer Prize-winning exploration of racial injustice and courage in a small Alabama town, seen through the eyes of young Scout Finch.",
-            "cover_url": "https://images.unsplash.com/photo-1476275466078-4007374efbbe?auto=format&fit=crop&w=600&q=80",
+            "cover_url": None,
         },
         {
             "title": "1984",
@@ -93,7 +93,7 @@ def seed_database(force: bool = False) -> bool:
             "stock": 26,
             "category": "Classic Literature",
             "description": "The dystopian masterpiece on totalitarian control, pervasive state surveillance, historical distortion, and human defiance.",
-            "cover_url": "https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=600&q=80",
+            "cover_url": None,
         },
         {
             "title": "Sapiens: A Brief History of Humankind",
@@ -103,7 +103,7 @@ def seed_database(force: bool = False) -> bool:
             "stock": 19,
             "category": "History",
             "description": "A brilliant narrative of human history tracing our cognitive, agricultural, and scientific milestones.",
-            "cover_url": "https://images.unsplash.com/photo-1461360370896-922624d12aa1?auto=format&fit=crop&w=600&q=80",
+            "cover_url": None,
         },
         {
             "title": "Thinking, Fast and Slow",
@@ -113,7 +113,7 @@ def seed_database(force: bool = False) -> bool:
             "stock": 17,
             "category": "Psychology",
             "description": "Nobel laureate Daniel Kahneman dissects the dual thought systems that govern decision-making, intuition, and rationality.",
-            "cover_url": "https://images.unsplash.com/photo-1506880018603-83d5b814b5a6?auto=format&fit=crop&w=600&q=80",
+            "cover_url": None,
         },
         {
             "title": "Atomic Habits",
@@ -123,7 +123,7 @@ def seed_database(force: bool = False) -> bool:
             "stock": 40,
             "category": "Self-Improvement",
             "description": "A clear, actionable system for building positive routines, eliminating unproductive behaviors, and mastering micro-improvements.",
-            "cover_url": "https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&w=600&q=80",
+            "cover_url": None,
         },
         {
             "title": "Deep Work: Rules for Focused Success in a Distracted World",
@@ -133,7 +133,7 @@ def seed_database(force: bool = False) -> bool:
             "stock": 20,
             "category": "Productivity",
             "description": "Frameworks and disciplines for achieving high-focus deep work states and exceptional output in a world of constant digital distraction.",
-            "cover_url": "https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&w=600&q=80",
+            "cover_url": None,
         },
     ]
 

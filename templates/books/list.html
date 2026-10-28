@@ -79,7 +79,6 @@
             <table class="table table-hover align-middle mb-0">
                 <thead class="table-light">
                     <tr>
-                        <th scope="col" style="width: 56px;">Cover</th>
                         <th scope="col">Title &amp; Author</th>
                         <th scope="col">Category</th>
                         <th scope="col" class="text-end">Price</th>
@@ -90,15 +89,6 @@
                 <tbody>
                     {% for book in books %}
                         <tr>
-                            <td>
-                                {% if book.cover_url %}
-                                    <img src="{{ book.cover_url }}" alt="{{ book.title }}" class="rounded shadow-xs object-fit-cover" style="width: 42px; height: 56px;" onerror="this.onerror=null; this.src='https://placehold.co/84x112?text=Book';">
-                                {% else %}
-                                    <div class="bg-light border rounded d-flex align-items-center justify-content-center text-muted" style="width: 42px; height: 56px;">
-                                        <i class="bi bi-book fs-5"></i>
-                                    </div>
-                                {% endif %}
-                            </td>
                             <td>
                                 <a href="{{ url_for('books_detail', id=book.id) }}" class="fw-semibold text-decoration-none text-dark d-block">
                                     {{ book.title }}

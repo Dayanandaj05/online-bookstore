@@ -12,18 +12,9 @@
 </nav>
 
 <div class="row g-4">
-    <!-- Left Column: Book Cover & Quick Meta -->
+    <!-- Left Column: Status & Actions -->
     <div class="col-md-4 col-lg-3">
         <div class="card border-0 shadow-sm text-center p-3 mb-3">
-            {% if book.cover_url %}
-                <img src="{{ book.cover_url }}" alt="{{ book.title }}" class="img-fluid rounded shadow-sm mx-auto mb-3 object-fit-cover" style="max-height: 360px;" onerror="this.onerror=null; this.src='https://placehold.co/300x420?text=No+Cover';">
-            {% else %}
-                <div class="bg-light border rounded d-flex flex-column align-items-center justify-content-center text-muted py-5 mb-3" style="min-height: 280px;">
-                    <i class="bi bi-book fs-1 mb-2"></i>
-                    <span class="small">No Cover Image</span>
-                </div>
-            {% endif %}
-
             <div class="d-flex flex-column gap-2">
                 {% if book.stock == 0 %}
                     <span class="badge bg-danger py-2">
@@ -117,16 +108,6 @@
                                     {{ book.stock }} copies
                                     {% if book.stock < 5 %}
                                         <span class="badge bg-warning text-dark ms-2">Low Stock</span>
-                                    {% endif %}
-                                </td>
-                            </tr>
-                            <tr>
-                                <th class="bg-light text-secondary">Cover Image URL</th>
-                                <td>
-                                    {% if book.cover_url %}
-                                        <a href="{{ book.cover_url }}" target="_blank" class="text-break">{{ book.cover_url }}</a>
-                                    {% else %}
-                                        <span class="text-muted">Not specified</span>
                                     {% endif %}
                                 </td>
                             </tr>
