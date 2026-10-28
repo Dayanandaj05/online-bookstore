@@ -1,0 +1,224 @@
+{% extends "base.html" %}
+
+{% block title %}Order #ORD-{{ "%04d"|format(order.id) }} | Page-Turn Bookstore{% endblock %}
+
+{% block content %}
+<!-- Breadcrumb -->
+<nav aria-label="breadcrumb" class="mb-4">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ url_for('orders') }}" class="text-decoration-none">Orders</a></li>
+        <li class="breadcrumb-item active" aria-current="page">#ORD-{{ "%04d"|format(order.id) }}</li>
+    </ol>
+</nav>
+
+<!-- Order Header Banner -->
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-body p-4 d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+        <div>
+            <div class="d-flex align-items-center gap-2 mb-1">
+                <h2 class="h3 fw-bold text-dark mb-0 font-monospace">Order #ORD-{{ "%04d"|format(order.id) }}</h2>
+                {% if order.status == 'Delivered' %}
+                    <span class="badge bg-success-subtle text-success border border-success-subtle fs-6">
+                        <i class="bi bi-check-circle me-1"></i> Delivered
+                    </span>
+                {% elif order.status == 'Shipped' %}
+                    <span class="badge bg-info-subtle text-info-emphasis border border-info-subtle fs-6">
+                        <i class="bi bi-truck me-1"></i> Shipped
+                    </span>
+                {% elif order.status == 'Pending' %}
+                    <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle fs-6">
+                        <i class="bi bi-hourglass-split me-1"></i> Pending
+                    </span>
+                {% elif order.status == 'Cancelled' %}
+                    <span class="badge bg-danger-subtle text-danger border border-danger-subtle fs-6">
+                        <i class="bi bi-x-circle me-1"></i> Cancelled
+                    </span>
+                {% else %}
+                    <span class="badge bg-secondary-subtle text-secondary border fs-6">
+                        {{ order.status }}
+                    </span>
+                {% endif %}
+            </div>
+            <p class="text-secondary small mb-0">
+                Placed on {{ order.order_date.strftime('%B %d, %Y at %I:%M %p UTC') if order.order_date else 'N/A' }}
+            </p>
+        </div>
+
+        <div class="text-md-end">
+            <span class="text-secondary small text-uppercase fw-semibold d-block">Order Total</span>
+            <span class="h2 fw-bold text-primary mb-0">${{ "%.2f"|format(order.total_amount) }}</span>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Left Column: Order Items -->
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+                <h5 class="card-title fw-bold mb-0">
+                    <i class="bi bi-box-seam text-primary me-2"></i>Ordered Books
+                </h5>
+                <span class="badge bg-secondary-subtle text-secondary border">
+                    {{ order.items|length }} line item{% if order.items|length != 1 %}s{% endif %}
+                </span>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th scope="col" style="width: 50px;">Cover</th>
+                            <th scope="col">Book Details</th>
+                            <th scope="col" class="text-end">Unit Price</th>
+                            <th scope="col" class="text-center">Quantity</th>
+                            <th scope="col" class="text-end">Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in order.items %}
+                            <tr>
+                                <td>
+                                    {% if item.book.cover_url %}
+                                        <img src="{{ item.book.cover_url }}" alt="{{ item.book.title }}" class="rounded shadow-xs object-fit-cover" style="width: 40px; height: 54px;" onerror="this.onerror=null; this.src='https://placehold.co/80x108?text=Book';">
+                                    {% else %}
+                                        <div class="bg-light border rounded d-flex align-items-center justify-content-center text-muted" style="width: 40px; height: 54px;">
+                                            <i class="bi bi-book"></i>
+                                        </div>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <a href="{{ url_for('books_detail', id=item.book.id) }}" class="fw-semibold text-dark text-decoration-none">
+                                        {{ item.book.title }}
+                                    </a>
+                                    <div class="text-secondary small">
+                                        by {{ item.book.author }} · <span class="font-monospace text-muted">{{ item.book.isbn }}</span>
+                                    </div>
+                                    <div class="text-muted small">
+                                        Current inventory stock: <strong>{{ item.book.stock }}</strong>
+                                    </div>
+                                </td>
+                                <td class="text-end font-monospace">
+                                    ${{ "%.2f"|format(item.unit_price) }}
+                                </td>
+                                <td class="text-center fw-semibold">
+                                    {{ item.quantity }}
+                                </td>
+                                <td class="text-end fw-bold font-monospace">
+                                    ${{ "%.2f"|format(item.quantity * item.unit_price) }}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot class="table-light">
+                        <tr>
+                            <td colspan="4" class="text-end fw-bold">Total Amount:</td>
+                            <td class="text-end fw-bold fs-5 text-primary">
+                                ${{ "%.2f"|format(order.total_amount) }}
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Column: Customer Info & Status Controls -->
+    <div class="col-lg-4">
+        <!-- Customer Info Card -->
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-white py-3 border-bottom">
+                <h5 class="card-title fw-bold mb-0">
+                    <i class="bi bi-person text-primary me-2"></i>Customer Information
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width: 42px; height: 42px;">
+                        {{ order.customer.name[:2]|upper }}
+                    </div>
+                    <div>
+                        <h6 class="fw-bold mb-0">
+                            <a href="{{ url_for('customers_detail', id=order.customer.id) }}" class="text-dark text-decoration-none">
+                                {{ order.customer.name }}
+                            </a>
+                        </h6>
+                        <small class="text-muted">Customer ID #{{ order.customer.id }}</small>
+                    </div>
+                </div>
+
+                <div class="mb-2 small">
+                    <span class="text-secondary fw-semibold">Email:</span>
+                    <a href="mailto:{{ order.customer.email }}" class="text-decoration-none ms-1 text-dark">
+                        {{ order.customer.email }}
+                    </a>
+                </div>
+
+                <div class="mb-2 small">
+                    <span class="text-secondary fw-semibold">Phone:</span>
+                    <span class="text-dark ms-1">{{ order.customer.phone or 'Not provided' }}</span>
+                </div>
+
+                <div class="small">
+                    <span class="text-secondary fw-semibold">Shipping Address:</span>
+                    <div class="text-dark mt-1 p-2 bg-light rounded border">
+                        {{ order.customer.address or 'No address on file' }}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Status Update Card -->
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-white py-3 border-bottom">
+                <h5 class="card-title fw-bold mb-0">
+                    <i class="bi bi-arrow-repeat text-primary me-2"></i>Update Order Status
+                </h5>
+            </div>
+            <div class="card-body">
+                <form action="{{ url_for('orders_status', id=order.id) }}" method="POST">
+                    <div class="mb-3">
+                        <label for="statusSelect" class="form-label small fw-semibold text-secondary">Fulfillment Status</label>
+                        <select id="statusSelect" name="status" class="form-select">
+                            {% for st in valid_statuses %}
+                                <option value="{{ st }}" {% if order.status == st %}selected{% endif %}>
+                                    {{ st }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    {% if order.status == 'Cancelled' %}
+                        <div class="alert alert-secondary py-2 px-3 small mb-3">
+                            <i class="bi bi-info-circle me-1"></i> Order is currently <strong>Cancelled</strong>. Stock items have already been restored.
+                        </div>
+                    {% else %}
+                        <div class="form-text small mb-3">
+                            <i class="bi bi-shield-exclamation text-warning me-1"></i> Changing status to <strong>Cancelled</strong> automatically restores items back into inventory.
+                        </div>
+                    {% endif %}
+
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-check2-circle me-1"></i> Update Status
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Danger Zone: Delete Order -->
+        <div class="card border-0 shadow-sm">
+            <div class="card-body">
+                <h6 class="fw-bold text-danger small text-uppercase mb-2">Delete Order</h6>
+                <p class="text-muted small mb-3">
+                    Deleting an order removes it completely. If this order is not already cancelled, stock will automatically be refunded back to the books.
+                </p>
+                <form action="{{ url_for('orders_delete', id=order.id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete order #ORD-{{ '%04d'|format(order.id) }}? This cannot be undone.');">
+                    <button type="submit" class="btn btn-outline-danger w-100">
+                        <i class="bi bi-trash me-1"></i> Delete Order
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

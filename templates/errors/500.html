@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}Internal Server Error (500) | Page-Turn Bookstore{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center py-5">
+    <div class="col-md-8 col-lg-6 text-center">
+        <div class="display-1 fw-bold text-danger mb-3">500</div>
+        <div class="mb-3">
+            <i class="bi bi-exclamation-octagon fs-1 text-danger"></i>
+        </div>
+        <h2 class="h3 fw-bold mb-2">Something Went Wrong</h2>
+        <p class="text-secondary mb-4">
+            An unexpected error occurred while processing your request. Our system recorded this and the database was safely preserved.
+        </p>
+        <div class="d-flex justify-content-center gap-3">
+            <a href="{{ url_for('books') }}" class="btn btn-primary">
+                <i class="bi bi-house-door me-1"></i> Return to Books
+            </a>
+            <a href="javascript:location.reload();" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-clockwise me-1"></i> Try Again
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

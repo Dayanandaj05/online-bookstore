@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+
+{% block title %}
+    {% if is_edit %}Edit Book: {{ data.get('title') }}{% else %}Add New Book{% endif %} | Books | Page-Turn Bookstore
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <!-- Breadcrumbs -->
+        <nav aria-label="breadcrumb" class="mb-3">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ url_for('books') }}" class="text-decoration-none">Books</a></li>
+                {% if is_edit %}
+                    <li class="breadcrumb-item"><a href="{{ url_for('books_detail', id=book.id) }}" class="text-decoration-none">{{ data.get('title') }}</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Edit</li>
+                {% else %}
+                    <li class="breadcrumb-item active" aria-current="page">New Book</li>
+                {% endif %}
+            </ol>
+        </nav>
+
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white py-3 border-bottom">
+                <h4 class="card-title fw-bold mb-0">
+                    <i class="bi {% if is_edit %}bi-pencil-square text-primary{% else %}bi-plus-circle text-success{% endif %} me-2"></i>
+                    {% if is_edit %}Edit Book Details{% else %}Add New Book to Inventory{% endif %}
+                </h4>
+            </div>
+
+            <div class="card-body p-4">
+                <form method="POST" action="{% if is_edit %}{{ url_for('books_edit', id=book.id) }}{% else %}{{ url_for('books_new') }}{% endif %}" novalidate>
+                    <!-- Title -->
+                    <div class="mb-3">
+                        <label for="title" class="form-label fw-semibold">Book Title <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control {% if errors and errors.get('title') %}is-invalid{% endif %}" id="title" name="title" value="{{ data.get('title', '') }}" placeholder="e.g. Designing Data-Intensive Applications" required>
+                        {% if errors and errors.get('title') %}
+                            <div class="invalid-feedback">{{ errors.get('title') }}</div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Author & ISBN -->
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label for="author" class="form-label fw-semibold">Author <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control {% if errors and errors.get('author') %}is-invalid{% endif %}" id="author" name="author" value="{{ data.get('author', '') }}" placeholder="e.g. Martin Kleppmann" required>
+                            {% if errors and errors.get('author') %}
+                                <div class="invalid-feedback">{{ errors.get('author') }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <label for="isbn" class="form-label fw-semibold">ISBN <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control {% if errors and errors.get('isbn') %}is-invalid{% endif %}" id="isbn" name="isbn" value="{{ data.get('isbn', '') }}" placeholder="e.g. 978-1449373320" required>
+                            {% if errors and errors.get('isbn') %}
+                                <div class="invalid-feedback">{{ errors.get('isbn') }}</div>
+                            {% else %}
+                                <div class="form-text">Must be a unique ISBN identifier.</div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Category, Price & Stock -->
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-4">
+                            <label for="category" class="form-label fw-semibold">Category <span class="text-danger">*</span></label>
+                            <input type="text" list="categoryOptions" class="form-control {% if errors and errors.get('category') %}is-invalid{% endif %}" id="category" name="category" value="{{ data.get('category', '') }}" placeholder="e.g. Computer Science" required>
+                            <datalist id="categoryOptions">
+                                {% for cat in categories %}
+                                    <option value="{{ cat }}">
+                                {% endfor %}
+                            </datalist>
+                            {% if errors and errors.get('category') %}
+                                <div class="invalid-feedback">{{ errors.get('category') }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-4">
+                            <label for="price" class="form-label fw-semibold">Price ($) <span class="text-danger">*</span></label>
+                            <div class="input-group has-validation">
+                                <span class="input-group-text">$</span>
+                                <input type="number" step="0.01" min="0.01" class="form-control {% if errors and errors.get('price') %}is-invalid{% endif %}" id="price" name="price" value="{{ data.get('price', '') }}" placeholder="29.99" required>
+                                {% if errors and errors.get('price') %}
+                                    <div class="invalid-feedback">{{ errors.get('price') }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label for="stock" class="form-label fw-semibold">Stock Quantity <span class="text-danger">*</span></label>
+                            <input type="number" min="0" step="1" class="form-control {% if errors and errors.get('stock') %}is-invalid{% endif %}" id="stock" name="stock" value="{{ data.get('stock', '0') if data.get('stock') is not none else '0' }}" placeholder="10" required>
+                            {% if errors and errors.get('stock') %}
+                                <div class="invalid-feedback">{{ errors.get('stock') }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Cover URL -->
+                    <div class="mb-3">
+                        <label for="cover_url" class="form-label fw-semibold">Cover Image URL <span class="text-muted fw-normal">(Optional)</span></label>
+                        <input type="url" class="form-control {% if errors and errors.get('cover_url') %}is-invalid{% endif %}" id="cover_url" name="cover_url" value="{{ data.get('cover_url', '') }}" placeholder="https://images.unsplash.com/...">
+                        <div class="form-text">Direct image URL for displaying the book cover thumbnail.</div>
+                    </div>
+
+                    <!-- Description -->
+                    <div class="mb-4">
+                        <label for="description" class="form-label fw-semibold">Description <span class="text-muted fw-normal">(Optional)</span></label>
+                        <textarea class="form-control" id="description" name="description" rows="4" placeholder="Brief summary of the book, synopsis, and target audience...">{{ data.get('description', '') }}</textarea>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2 border-top pt-3">
+                        <a href="{% if is_edit %}{{ url_for('books_detail', id=book.id) }}{% else %}{{ url_for('books') }}{% endif %}" class="btn btn-outline-secondary">
+                            Cancel
+                        </a>
+                        <button type="submit" class="btn btn-primary px-4">
+                            <i class="bi {% if is_edit %}bi-check-lg{% else %}bi-plus-lg{% endif %} me-1"></i>
+                            {% if is_edit %}Save Changes{% else %}Create Book{% endif %}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

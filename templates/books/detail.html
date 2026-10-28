@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+
+{% block title %}{{ book.title }} | Books | Page-Turn Bookstore{% endblock %}
+
+{% block content %}
+<!-- Breadcrumb -->
+<nav aria-label="breadcrumb" class="mb-4">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ url_for('books') }}" class="text-decoration-none">Books</a></li>
+        <li class="breadcrumb-item active" aria-current="page">{{ book.title }}</li>
+    </ol>
+</nav>
+
+<div class="row g-4">
+    <!-- Left Column: Book Cover & Quick Meta -->
+    <div class="col-md-4 col-lg-3">
+        <div class="card border-0 shadow-sm text-center p-3 mb-3">
+            {% if book.cover_url %}
+                <img src="{{ book.cover_url }}" alt="{{ book.title }}" class="img-fluid rounded shadow-sm mx-auto mb-3 object-fit-cover" style="max-height: 360px;" onerror="this.onerror=null; this.src='https://placehold.co/300x420?text=No+Cover';">
+            {% else %}
+                <div class="bg-light border rounded d-flex flex-column align-items-center justify-content-center text-muted py-5 mb-3" style="min-height: 280px;">
+                    <i class="bi bi-book fs-1 mb-2"></i>
+                    <span class="small">No Cover Image</span>
+                </div>
+            {% endif %}
+
+            <div class="d-flex flex-column gap-2">
+                {% if book.stock == 0 %}
+                    <span class="badge bg-danger py-2">
+                        <i class="bi bi-x-circle me-1"></i> Out of Stock
+                    </span>
+                {% elif book.stock < 5 %}
+                    <span class="badge bg-warning text-dark py-2">
+                        <i class="bi bi-exclamation-triangle-fill me-1"></i> Low Stock ({{ book.stock }} remaining)
+                    </span>
+                {% else %}
+                    <span class="badge bg-success-subtle text-success border border-success-subtle py-2">
+                        <i class="bi bi-check-circle me-1"></i> In Stock ({{ book.stock }} units)
+                    </span>
+                {% endif %}
+
+                {% if orders_count and orders_count > 0 %}
+                    <span class="badge bg-info-subtle text-info-emphasis border border-info-subtle py-2">
+                        <i class="bi bi-bag-check me-1"></i> Appears in {{ orders_count }} order{% if orders_count != 1 %}s{% endif %}
+                    </span>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="card border-0 shadow-sm p-3">
+            <h6 class="fw-bold text-uppercase text-secondary small mb-3">Actions</h6>
+            <div class="d-grid gap-2">
+                <a href="{{ url_for('books_edit', id=book.id) }}" class="btn btn-outline-primary">
+                    <i class="bi bi-pencil me-1"></i> Edit Book
+                </a>
+                
+                <form action="{{ url_for('books_delete', id=book.id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete book &quot;{{ book.title|e }}&quot;? This action cannot be undone.');">
+                    <button type="submit" class="btn btn-outline-danger w-100">
+                        <i class="bi bi-trash me-1"></i> Delete Book
+                    </button>
+                </form>
+
+                <a href="{{ url_for('books') }}" class="btn btn-light border text-secondary">
+                    <i class="bi bi-arrow-left me-1"></i> Back to Catalog
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Column: Book Specifications & Details -->
+    <div class="col-md-8 col-lg-9">
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-body p-4">
+                <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2">
+                    <span class="badge bg-secondary-subtle text-secondary border fs-6">
+                        {{ book.category }}
+                    </span>
+                    <span class="h3 fw-bold text-primary mb-0">
+                        ${{ "%.2f"|format(book.price) }}
+                    </span>
+                </div>
+
+                <h1 class="h2 fw-bold text-dark mb-1">{{ book.title }}</h1>
+                <p class="fs-5 text-secondary mb-3">by <span class="fw-semibold text-dark">{{ book.author }}</span></p>
+
+                <hr class="my-4">
+
+                <h5 class="fw-bold mb-3">Description</h5>
+                {% if book.description %}
+                    <p class="text-body leading-relaxed mb-4" style="line-height: 1.7;">
+                        {{ book.description }}
+                    </p>
+                {% else %}
+                    <p class="text-muted fst-italic mb-4">No description has been provided for this book.</p>
+                {% endif %}
+
+                <h5 class="fw-bold mb-3">Book Specifications</h5>
+                <div class="table-responsive">
+                    <table class="table table-bordered mb-0">
+                        <tbody>
+                            <tr>
+                                <th class="bg-light text-secondary" style="width: 200px;">ISBN</th>
+                                <td><code class="font-monospace fs-6">{{ book.isbn }}</code></td>
+                            </tr>
+                            <tr>
+                                <th class="bg-light text-secondary">Category</th>
+                                <td>{{ book.category }}</td>
+                            </tr>
+                            <tr>
+                                <th class="bg-light text-secondary">Price</th>
+                                <td>${{ "%.2f"|format(book.price) }}</td>
+                            </tr>
+                            <tr>
+                                <th class="bg-light text-secondary">Current Stock</th>
+                                <td>
+                                    {{ book.stock }} copies
+                                    {% if book.stock < 5 %}
+                                        <span class="badge bg-warning text-dark ms-2">Low Stock</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="bg-light text-secondary">Cover Image URL</th>
+                                <td>
+                                    {% if book.cover_url %}
+                                        <a href="{{ book.cover_url }}" target="_blank" class="text-break">{{ book.cover_url }}</a>
+                                    {% else %}
+                                        <span class="text-muted">Not specified</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="bg-light text-secondary">Date Added</th>
+                                <td>{{ book.created_at.strftime('%B %d, %Y at %I:%M %p') if book.created_at else 'N/A' }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

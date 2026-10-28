@@ -1,0 +1,210 @@
+{% extends "base.html" %}
+
+{% block title %}Orders Management | Page-Turn Bookstore{% endblock %}
+
+{% block content %}
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+    <div>
+        <h1 class="h2 fw-bold text-dark mb-1">Customer Orders</h1>
+        <p class="text-secondary mb-0">Track customer purchases, fulfillment status, and order totals.</p>
+    </div>
+    <div>
+        <a href="{{ url_for('orders_new') }}" class="btn btn-primary d-inline-flex align-items-center gap-2 shadow-sm">
+            <i class="bi bi-cart-plus"></i>
+            <span>Create New Order</span>
+        </a>
+    </div>
+</div>
+
+<!-- Dashboard Metrics Section -->
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="card metric-card border-0 shadow-sm h-100">
+            <div class="card-body d-flex align-items-center gap-3">
+                <div class="icon-shape bg-primary text-white rounded-3 p-3">
+                    <i class="bi bi-receipt fs-3"></i>
+                </div>
+                <div>
+                    <h6 class="text-uppercase text-secondary fw-semibold mb-1 small">Total Orders</h6>
+                    <h3 class="fw-bold mb-0">{{ total_orders }}</h3>
+                    <small class="text-muted">Recorded lifetime orders</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card metric-card border-0 shadow-sm h-100">
+            <div class="card-body d-flex align-items-center gap-3">
+                <div class="icon-shape bg-success text-white rounded-3 p-3">
+                    <i class="bi bi-currency-dollar fs-3"></i>
+                </div>
+                <div>
+                    <h6 class="text-uppercase text-secondary fw-semibold mb-1 small">Total Revenue</h6>
+                    <h3 class="fw-bold mb-0 text-success">${{ "%.2f"|format(total_revenue) }}</h3>
+                    <small class="text-muted">Excludes cancelled orders</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card metric-card border-0 shadow-sm h-100">
+            <div class="card-body d-flex align-items-center gap-3">
+                <div class="icon-shape bg-warning text-dark rounded-3 p-3">
+                    <i class="bi bi-hourglass-split fs-3"></i>
+                </div>
+                <div>
+                    <h6 class="text-uppercase text-secondary fw-semibold mb-1 small">Pending Orders</h6>
+                    <h3 class="fw-bold mb-0 text-warning-emphasis">{{ pending_orders }}</h3>
+                    <small class="text-muted">Awaiting fulfillment</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Filter by Status -->
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-body p-3 d-flex flex-wrap align-items-center justify-content-between gap-3">
+        <div class="d-flex flex-wrap align-items-center gap-2">
+            <span class="small fw-semibold text-secondary me-2"><i class="bi bi-funnel me-1"></i>Status Filter:</span>
+            <a href="{{ url_for('orders') }}" class="btn btn-sm {% if not selected_status %}btn-dark{% else %}btn-outline-secondary{% endif %}">
+                All ({{ total_orders }})
+            </a>
+            {% for st in valid_statuses %}
+                <a href="{{ url_for('orders', status=st) }}" class="btn btn-sm {% if selected_status == st %}btn-dark{% else %}btn-outline-secondary{% endif %}">
+                    {% if st == 'Pending' %}
+                        <i class="bi bi-hourglass-split text-warning me-1"></i>
+                    {% elif st == 'Shipped' %}
+                        <i class="bi bi-truck text-info me-1"></i>
+                    {% elif st == 'Delivered' %}
+                        <i class="bi bi-check-circle text-success me-1"></i>
+                    {% elif st == 'Cancelled' %}
+                        <i class="bi bi-x-circle text-danger me-1"></i>
+                    {% endif %}
+                    {{ st }}
+                </a>
+            {% endfor %}
+        </div>
+
+        {% if selected_status %}
+            <div>
+                <a href="{{ url_for('orders') }}" class="small text-danger text-decoration-none">
+                    <i class="bi bi-x-circle me-1"></i>Clear filter
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Orders Table -->
+{% if orders %}
+    <div class="card border-0 shadow-sm">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th scope="col" style="width: 140px;">Order ID</th>
+                        <th scope="col">Customer</th>
+                        <th scope="col">Date Placed</th>
+                        <th scope="col">Status</th>
+                        <th scope="col" class="text-center">Items</th>
+                        <th scope="col" class="text-end">Total Amount</th>
+                        <th scope="col" class="text-end" style="width: 150px;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in orders %}
+                        <tr>
+                            <td>
+                                <a href="{{ url_for('orders_detail', id=order.id) }}" class="fw-bold font-monospace text-decoration-none text-primary">
+                                    #ORD-{{ "%04d"|format(order.id) }}
+                                </a>
+                            </td>
+                            <td>
+                                <a href="{{ url_for('customers_detail', id=order.customer.id) }}" class="fw-semibold text-dark text-decoration-none">
+                                    {{ order.customer.name }}
+                                </a>
+                                <div class="small text-muted">{{ order.customer.email }}</div>
+                            </td>
+                            <td class="text-secondary small">
+                                {{ order.order_date.strftime('%b %d, %Y at %I:%M %p') if order.order_date else 'N/A' }}
+                            </td>
+                            <td>
+                                {% if order.status == 'Delivered' %}
+                                    <span class="badge bg-success-subtle text-success border border-success-subtle">
+                                        <i class="bi bi-check-circle me-1"></i> Delivered
+                                    </span>
+                                {% elif order.status == 'Shipped' %}
+                                    <span class="badge bg-info-subtle text-info-emphasis border border-info-subtle">
+                                        <i class="bi bi-truck me-1"></i> Shipped
+                                    </span>
+                                {% elif order.status == 'Pending' %}
+                                    <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle">
+                                        <i class="bi bi-hourglass-split me-1"></i> Pending
+                                    </span>
+                                {% elif order.status == 'Cancelled' %}
+                                    <span class="badge bg-danger-subtle text-danger border border-danger-subtle">
+                                        <i class="bi bi-x-circle me-1"></i> Cancelled
+                                    </span>
+                                {% else %}
+                                    <span class="badge bg-secondary-subtle text-secondary border">
+                                        {{ order.status }}
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td class="text-center small">
+                                {{ order.items|length }} item{% if order.items|length != 1 %}s{% endif %}
+                            </td>
+                            <td class="text-end fw-bold">
+                                ${{ "%.2f"|format(order.total_amount) }}
+                            </td>
+                            <td class="text-end">
+                                <div class="btn-group btn-group-sm" role="group">
+                                    <a href="{{ url_for('orders_detail', id=order.id) }}" class="btn btn-outline-secondary" title="View Order">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <form action="{{ url_for('orders_delete', id=order.id) }}" method="POST" class="d-inline" onsubmit="return confirm('Delete order #ORD-{{ '%04d'|format(order.id) }}? If active, inventory will be restored.');">
+                                        <button type="submit" class="btn btn-outline-danger" title="Delete Order">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="card-footer bg-white border-top py-3 text-muted small d-flex justify-content-between align-items-center">
+            <span>Showing <strong>{{ orders|length }}</strong> order{% if orders|length != 1 %}s{% endif %}</span>
+            <span class="text-secondary">Transactional integrity verified</span>
+        </div>
+    </div>
+{% else %}
+    <div class="card border-0 shadow-sm py-5 text-center">
+        <div class="card-body">
+            <div class="display-6 text-muted mb-3">
+                <i class="bi bi-bag-x"></i>
+            </div>
+            <h4 class="fw-bold text-dark mb-2">No Orders Found</h4>
+            <p class="text-secondary mb-4">
+                {% if selected_status %}
+                    No orders currently have the status "{{ selected_status }}".
+                {% else %}
+                    No customer orders have been recorded in the database yet.
+                {% endif %}
+            </p>
+            {% if selected_status %}
+                <a href="{{ url_for('orders') }}" class="btn btn-outline-secondary me-2">
+                    <i class="bi bi-arrow-clockwise me-1"></i> Reset Status Filter
+                </a>
+            {% endif %}
+            <a href="{{ url_for('orders_new') }}" class="btn btn-primary">
+                <i class="bi bi-cart-plus me-1"></i> Create First Order
+            </a>
+        </div>
+    </div>
+{% endif %}
+{% endblock %}

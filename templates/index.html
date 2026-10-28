@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard | Page-Turn Bookstore{% endblock %}
+
+{% block content %}
+<div class="row align-items-center mb-4">
+    <div class="col-md-8">
+        <h1 class="h2 fw-bold text-dark mb-1">Bookstore Management Foundation</h1>
+        <p class="text-secondary mb-0">Production-ready Flask application with SQLAlchemy models, relational schema, and seed dataset.</p>
+    </div>
+    <div class="col-md-4 text-md-end mt-3 mt-md-0">
+        <span class="badge bg-success-subtle text-success fs-6 px-3 py-2 border border-success-subtle">
+            <i class="bi bi-shield-check me-1"></i> Foundation Operational
+        </span>
+    </div>
+</div>
+
+<!-- Quick Metrics Overview -->
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="card metric-card border-0 shadow-sm h-100">
+            <div class="card-body d-flex align-items-center gap-3">
+                <div class="icon-shape bg-primary text-white rounded-3 p-3">
+                    <i class="bi bi-book fs-3"></i>
+                </div>
+                <div>
+                    <h6 class="text-uppercase text-secondary fw-semibold mb-1 small">Total Books</h6>
+                    <h3 class="fw-bold mb-0">{{ books_count }}</h3>
+                    <small class="text-muted">In inventory</small>
+                </div>
+            </div>
+            <div class="card-footer bg-light border-0 py-2 px-3">
+                <a href="{{ url_for('books') }}" class="small text-decoration-none fw-medium">View Books <i class="bi bi-arrow-right"></i></a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card metric-card border-0 shadow-sm h-100">
+            <div class="card-body d-flex align-items-center gap-3">
+                <div class="icon-shape bg-info text-white rounded-3 p-3">
+                    <i class="bi bi-people fs-3"></i>
+                </div>
+                <div>
+                    <h6 class="text-uppercase text-secondary fw-semibold mb-1 small">Registered Customers</h6>
+                    <h3 class="fw-bold mb-0">{{ customers_count }}</h3>
+                    <small class="text-muted">Active profiles</small>
+                </div>
+            </div>
+            <div class="card-footer bg-light border-0 py-2 px-3">
+                <a href="{{ url_for('customers') }}" class="small text-decoration-none fw-medium">View Customers <i class="bi bi-arrow-right"></i></a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card metric-card border-0 shadow-sm h-100">
+            <div class="card-body d-flex align-items-center gap-3">
+                <div class="icon-shape bg-warning text-white rounded-3 p-3">
+                    <i class="bi bi-bag-check fs-3"></i>
+                </div>
+                <div>
+                    <h6 class="text-uppercase text-secondary fw-semibold mb-1 small">Total Orders</h6>
+                    <h3 class="fw-bold mb-0">{{ orders_count }}</h3>
+                    <small class="text-muted">Recorded orders</small>
+                </div>
+            </div>
+            <div class="card-footer bg-light border-0 py-2 px-3">
+                <a href="{{ url_for('orders') }}" class="small text-decoration-none fw-medium">View Orders <i class="bi bi-arrow-right"></i></a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Architecture & Configuration Summary Card -->
+<div class="row g-4">
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-white py-3">
+                <h5 class="card-title fw-bold mb-0 d-flex align-items-center gap-2">
+                    <i class="bi bi-layers-half text-primary"></i> System Configuration &amp; Foundation Details
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-sm align-middle mb-0">
+                        <tbody>
+                            <tr>
+                                <th class="text-muted fw-semibold" style="width: 200px;">Database Engine</th>
+                                <td>
+                                    <span class="badge bg-light text-dark border font-monospace">{{ db_engine }}</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="text-muted fw-semibold">Database URI</th>
+                                <td><code class="text-break">{{ db_uri_masked }}</code></td>
+                            </tr>
+                            <tr>
+                                <th class="text-muted fw-semibold">Auto-Seeding</th>
+                                <td>
+                                    <span class="badge bg-success-subtle text-success">Enabled on Empty Table</span>
+                                    <small class="text-muted ms-2">(12 books, 5 customers, 4 orders seeded)</small>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="text-muted fw-semibold">Cascade Deletion</th>
+                                <td>
+                                    <span class="badge bg-primary-subtle text-primary">Configured</span>
+                                    <small class="text-muted ms-2">Order deletion cascades to OrderItems</small>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="text-muted fw-semibold">Health Route</th>
+                                <td>
+                                    <a href="{{ url_for('health') }}" target="_blank" class="font-monospace text-decoration-none">
+                                        /health <i class="bi bi-box-arrow-up-right small"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white py-3">
+                <h5 class="card-title fw-bold mb-0 d-flex align-items-center gap-2">
+                    <i class="bi bi-shield-lock text-success"></i> Input Validators
+                </h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item px-0 d-flex align-items-center gap-2">
+                        <i class="bi bi-check-circle-fill text-success"></i>
+                        <div>
+                            <strong>Title Validation:</strong>
+                            <div class="small text-muted">Non-empty string, max 255 chars</div>
+                        </div>
+                    </li>
+                    <li class="list-group-item px-0 d-flex align-items-center gap-2">
+                        <i class="bi bi-check-circle-fill text-success"></i>
+                        <div>
+                            <strong>Price Validation:</strong>
+                            <div class="small text-muted">Strictly numeric and &gt; 0.00</div>
+                        </div>
+                    </li>
+                    <li class="list-group-item px-0 d-flex align-items-center gap-2">
+                        <i class="bi bi-check-circle-fill text-success"></i>
+                        <div>
+                            <strong>Stock Validation:</strong>
+                            <div class="small text-muted">Integer &gt;= 0</div>
+                        </div>
+                    </li>
+                    <li class="list-group-item px-0 d-flex align-items-center gap-2">
+                        <i class="bi bi-check-circle-fill text-success"></i>
+                        <div>
+                            <strong>Email Validation:</strong>
+                            <div class="small text-muted">Regex verified RFC-standard email</div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
